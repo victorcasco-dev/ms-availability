@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+	<springProperty name="LOG_FILE" source="logging.file.name" defaultValue="logs/ms-availability.log"/>
+	<include resource="org/springframework/boot/logging/logback/file-appender.xml"/>
+	<include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+	<logger name="com.reservas.availability" level="INFO"/>
+	<logger name="org.springframework.data.jpa" level="DEBUG"/>
+	<logger name="org.hibernate.SQL" level="DEBUG"/>
+
+	<root level="INFO">
+		<appender-ref ref="CONSOLE"/>
+		<appender-ref ref="FILE"/>
+	</root>
+</configuration>
