@@ -6,6 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Getter
 @Setter
+/** Límites de paginación ({@code app.pagination.*}). */
 @ConfigurationProperties(prefix = "app.pagination")
 public class PaginationProperties {
 

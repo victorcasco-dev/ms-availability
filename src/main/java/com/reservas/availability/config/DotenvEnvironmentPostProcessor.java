@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/** Integra archivo {@code .env} en el entorno Spring. */
 public class DotenvEnvironmentPostProcessor implements EnvironmentPostProcessor {
 
 	@Override

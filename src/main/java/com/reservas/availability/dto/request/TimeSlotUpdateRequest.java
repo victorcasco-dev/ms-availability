@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
+/** Cuerpo de {@code PUT /time-slots/{id}}. */
 @Getter
 @Setter
 public class TimeSlotUpdateRequest {

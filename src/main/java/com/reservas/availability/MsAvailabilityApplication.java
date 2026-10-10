@@ -8,12 +8,18 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.liquibase.autoconfigure.LiquibaseAutoConfiguration;
 import org.springframework.boot.persistence.autoconfigure.EntityScan;
 
+/**
+ * Punto de arranque de ms-availability (franjas horarias + referencias de profesor).
+ */
 @SpringBootApplication(exclude = LiquibaseAutoConfiguration.class)
 @EnableDiscoveryClient
 @EntityScan(basePackages = "com.reservas.commons.entity")
 @EnableConfigurationProperties(PaginationProperties.class)
 public class MsAvailabilityApplication {
 
+	/**
+	 * @param args argumentos de Spring Boot
+	 */
 	public static void main(String[] args) {
 		SpringApplication.run(MsAvailabilityApplication.class, args);
 	}

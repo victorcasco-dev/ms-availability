@@ -11,6 +11,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.ReportingPolicy;
 
+/** MapStruct: {@link TimeSlot} ↔ DTOs commons y peticiones de actualización. */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public interface TimeSlotMapper {
 

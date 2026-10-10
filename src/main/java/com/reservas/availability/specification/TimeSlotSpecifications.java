@@ -14,6 +14,7 @@ import jakarta.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
 
+/** Filtros de franjas (profesor, fecha, estado, {@code researchLineId}). */
 public final class TimeSlotSpecifications {
 
 	private TimeSlotSpecifications() {

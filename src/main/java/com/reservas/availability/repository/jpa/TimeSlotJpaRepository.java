@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.UUID;
 
+/** Spring Data JPA para {@link TimeSlot}. */
 public interface TimeSlotJpaRepository extends JpaRepository<TimeSlot, UUID>, JpaSpecificationExecutor<TimeSlot> {
 
 	boolean existsByProfessor_IdAndSlotDateAndStartTime(UUID professorId, LocalDate slotDate, LocalTime startTime);

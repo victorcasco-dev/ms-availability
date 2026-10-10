@@ -15,6 +15,7 @@ import java.time.LocalTime;
 import java.util.Optional;
 import java.util.UUID;
 
+/** Persistencia de {@link TimeSlot}. */
 @Repository
 @RequiredArgsConstructor
 public class TimeSlotRepository {

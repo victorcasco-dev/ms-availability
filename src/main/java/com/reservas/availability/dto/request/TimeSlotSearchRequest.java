@@ -8,6 +8,7 @@ import lombok.Setter;
 import java.time.LocalDate;
 import java.util.UUID;
 
+/** Cuerpo de {@code POST /time-slots/search}. */
 @Getter
 @Setter
 public class TimeSlotSearchRequest {

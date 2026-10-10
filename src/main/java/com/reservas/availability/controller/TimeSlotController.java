@@ -29,6 +29,12 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.util.UUID;
 
+/**
+ * REST de {@link com.reservas.commons.entity.TimeSlot}.
+ *
+ * <p>DELETE realiza borrado lógico de negocio: {@code cancel()} deja el estado en {@code CANCELLED}
+ * (Entrega #1 no define columna {@code active} en {@code time_slot}).</p>
+ */
 @RestController
 @RequestMapping("/time-slots")
 @RequiredArgsConstructor

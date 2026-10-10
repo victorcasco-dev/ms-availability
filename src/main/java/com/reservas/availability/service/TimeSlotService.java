@@ -30,6 +30,9 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.UUID;
 
+/**
+ * Reglas de negocio de franjas horarias (disponible, reservada, cancelada).
+ */
 @Service
 @RequiredArgsConstructor
 public class TimeSlotService {
