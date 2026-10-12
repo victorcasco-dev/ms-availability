@@ -1,9 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 	<include resource="org/springframework/boot/logging/logback/defaults.xml"/>
-	<springProperty name="LOG_FILE" source="logging.file.name" defaultValue="logs/ms-availability.log"/>
-	<include resource="org/springframework/boot/logging/logback/file-appender.xml"/>
 	<include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+	<springProperty name="APP_NAME" source="spring.application.name" defaultValue="ms-availability"/>
+	<springProperty name="LOG_MAX_HISTORY" source="logging.logback.rollingpolicy.max-history" defaultValue="30"/>
+
+	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>${FILE_LOG_THRESHOLD}</level>
+		</filter>
+		<encoder>
+			<pattern>${FILE_LOG_PATTERN}</pattern>
+			<charset>${FILE_LOG_CHARSET}</charset>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>logs/${APP_NAME}-%d{yyyy-MM-dd}.log</fileNamePattern>
+			<maxHistory>${LOG_MAX_HISTORY}</maxHistory>
+			<cleanHistoryOnStart>false</cleanHistoryOnStart>
+		</rollingPolicy>
+	</appender>
 
 	<logger name="com.reservas.availability" level="INFO"/>
 	<logger name="org.springframework.data.jpa" level="DEBUG"/>
