@@ -2,7 +2,7 @@ package com.reservas.availability.service;
 
 import com.reservas.commons.entity.Professor;
 import com.reservas.commons.exception.ResourceNotFoundException;
-import com.reservas.availability.config.PageRequestFactory;
+import com.reservas.commons.pagination.PageRequestFactory;
 import com.reservas.availability.dto.ProfessorReferenceDto;
 import com.reservas.availability.dto.ProfessorReferencePageDto;
 import com.reservas.availability.dto.request.ProfessorReferenceSearchRequest;

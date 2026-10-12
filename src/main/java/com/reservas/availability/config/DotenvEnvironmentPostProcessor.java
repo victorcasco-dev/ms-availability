@@ -31,7 +31,7 @@ public class DotenvEnvironmentPostProcessor implements EnvironmentPostProcessor 
 
 		Map<String, Object> values = new HashMap<>();
 		dotenv.entries().forEach(entry -> {
-			if (System.getenv(entry.getKey()) == null) {
+			if (shouldLoadFromDotenv(entry.getKey())) {
 				values.put(entry.getKey(), entry.getValue());
 			}
 		});
@@ -39,6 +39,14 @@ public class DotenvEnvironmentPostProcessor implements EnvironmentPostProcessor 
 		if (!values.isEmpty()) {
 			environment.getPropertySources().addFirst(new MapPropertySource("ms-availability-dotenv", values));
 		}
+	}
+
+	private static boolean shouldLoadFromDotenv(String key) {
+		String fromOs = System.getenv(key);
+		if (fromOs == null || fromOs.isBlank()) {
+			return true;
+		}
+		return fromOs.startsWith("${") && fromOs.endsWith("}");
 	}
 
 	private static Path resolveEnvFile() {

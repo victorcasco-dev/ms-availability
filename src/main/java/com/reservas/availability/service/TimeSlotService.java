@@ -10,7 +10,7 @@ import com.reservas.commons.exception.BadRequestException;
 import com.reservas.commons.exception.ConflictException;
 import com.reservas.commons.exception.InvalidOperationException;
 import com.reservas.commons.exception.ResourceNotFoundException;
-import com.reservas.availability.config.PageRequestFactory;
+import com.reservas.commons.pagination.PageRequestFactory;
 import com.reservas.availability.dto.request.TimeSlotSearchRequest;
 import com.reservas.availability.dto.request.TimeSlotUpdateRequest;
 import com.reservas.availability.mapper.PageMapper;

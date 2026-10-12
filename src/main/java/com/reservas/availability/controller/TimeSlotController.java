@@ -7,12 +7,11 @@ import com.reservas.commons.dto.TimeSlotStatusDto;
 import com.reservas.availability.dto.request.TimeSlotSearchRequest;
 import com.reservas.availability.dto.request.TimeSlotUpdateRequest;
 import com.reservas.availability.service.TimeSlotService;
+import com.reservas.commons.web.BaseController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.net.URI;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -39,9 +37,7 @@ import java.util.UUID;
 @RequestMapping("/time-slots")
 @RequiredArgsConstructor
 @Tag(name = "Availability")
-public class TimeSlotController {
-
-	private static final Logger log = LoggerFactory.getLogger(TimeSlotController.class);
+public class TimeSlotController extends BaseController {
 
 	private final TimeSlotService timeSlotService;
 
@@ -50,7 +46,7 @@ public class TimeSlotController {
 	public ResponseEntity<TimeSlotDto> create(@Valid @RequestBody TimeSlotCreateDto dto) {
 		log.info("Incoming POST /time-slots");
 		TimeSlotDto created = timeSlotService.create(dto);
-		return ResponseEntity.created(URI.create("/time-slots/" + created.getId())).body(created);
+		return created("/time-slots/" + created.getId(), created);
 	}
 
 	@GetMapping
@@ -102,7 +98,7 @@ public class TimeSlotController {
 	public ResponseEntity<Void> delete(@PathVariable UUID id) {
 		log.info("Incoming DELETE /time-slots/{}", id);
 		timeSlotService.deleteLogically(id);
-		return ResponseEntity.noContent().build();
+		return noContent();
 	}
 
 	@PutMapping("/{id}/book")

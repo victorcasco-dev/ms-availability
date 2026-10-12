@@ -4,12 +4,11 @@ import com.reservas.availability.dto.ProfessorReferenceDto;
 import com.reservas.availability.dto.ProfessorReferencePageDto;
 import com.reservas.availability.dto.request.ProfessorReferenceSearchRequest;
 import com.reservas.availability.service.ProfessorReferenceService;
+import com.reservas.commons.web.BaseController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,9 +26,7 @@ import java.util.UUID;
 @RequestMapping("/professor-references")
 @RequiredArgsConstructor
 @Tag(name = "Professor references")
-public class ProfessorReferenceController {
-
-	private static final Logger log = LoggerFactory.getLogger(ProfessorReferenceController.class);
+public class ProfessorReferenceController extends BaseController {
 
 	private final ProfessorReferenceService professorReferenceService;
 
