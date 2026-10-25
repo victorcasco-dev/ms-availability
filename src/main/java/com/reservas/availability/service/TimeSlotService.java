@@ -11,6 +11,8 @@ import com.reservas.commons.exception.ConflictException;
 import com.reservas.commons.exception.InvalidOperationException;
 import com.reservas.commons.exception.ResourceNotFoundException;
 import com.reservas.commons.pagination.PageRequestFactory;
+import com.reservas.availability.cache.CacheKeyFactory;
+import com.reservas.availability.cache.IndividualCache;
 import com.reservas.availability.dto.request.TimeSlotSearchRequest;
 import com.reservas.availability.dto.request.TimeSlotUpdateRequest;
 import com.reservas.availability.mapper.PageMapper;
@@ -21,6 +23,9 @@ import com.reservas.availability.specification.TimeSlotSpecifications;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -44,8 +49,11 @@ public class TimeSlotService {
 	private final TimeSlotMapper timeSlotMapper;
 	private final PageMapper pageMapper;
 	private final PageRequestFactory pageRequestFactory;
+	private final IndividualCache individualCache;
+	private final CacheKeyFactory cacheKeys;
 
 	@Transactional
+	@CachePut(cacheNames = "timeSlots", key = "@cacheKeys.of('time-slot', #result.id)")
 	public TimeSlotDto create(TimeSlotCreateDto dto) {
 		log.info("Creating time slot professorId={} date={}", dto.getProfessorId(), dto.getSlotDate());
 		validateCreate(dto);
@@ -64,6 +72,7 @@ public class TimeSlotService {
 	}
 
 	@Transactional(readOnly = true)
+	@Cacheable(cacheNames = "timeSlots", key = "@cacheKeys.of('time-slot', #id)")
 	public TimeSlotDto getById(UUID id) {
 		log.info("Getting time slot id={}", id);
 		return timeSlotMapper.toDto(findOrThrow(id));
@@ -81,10 +90,13 @@ public class TimeSlotService {
 						Sort.by("slotDate").descending().and(Sort.by("startTime").ascending())
 				)
 		);
-		return pageMapper.toTimeSlotPage(page);
+		TimeSlotPageDto result = pageMapper.toTimeSlotPage(page);
+		individualCache.putEach("timeSlots", result.getContent(), item -> cacheKeys.of("time-slot", item.getId()));
+		return result;
 	}
 
 	@Transactional
+	@CachePut(cacheNames = "timeSlots", key = "@cacheKeys.of('time-slot', #id)")
 	public TimeSlotDto update(UUID id, TimeSlotUpdateRequest request) {
 		log.info("Updating time slot id={}", id);
 		TimeSlot entity = findOrThrow(id);
@@ -107,6 +119,7 @@ public class TimeSlotService {
 	}
 
 	@Transactional
+	@CacheEvict(cacheNames = "timeSlots", key = "@cacheKeys.of('time-slot', #id)")
 	public void deleteLogically(UUID id) {
 		log.info("Logical delete (cancel) time slot id={}", id);
 		TimeSlot entity = findOrThrow(id);
@@ -115,6 +128,7 @@ public class TimeSlotService {
 	}
 
 	@Transactional
+	@CachePut(cacheNames = "timeSlots", key = "@cacheKeys.of('time-slot', #id)")
 	public TimeSlotDto book(UUID id) {
 		log.info("Booking time slot id={}", id);
 		TimeSlot entity = findOrThrow(id);
@@ -123,6 +137,7 @@ public class TimeSlotService {
 	}
 
 	@Transactional
+	@CachePut(cacheNames = "timeSlots", key = "@cacheKeys.of('time-slot', #id)")
 	public TimeSlotDto release(UUID id) {
 		log.info("Releasing time slot id={}", id);
 		TimeSlot entity = findOrThrow(id);

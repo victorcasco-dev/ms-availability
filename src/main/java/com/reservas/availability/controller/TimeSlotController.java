@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,6 +43,7 @@ public class TimeSlotController extends BaseController {
 	private final TimeSlotService timeSlotService;
 
 	@PostMapping
+	@PreAuthorize("hasAnyAuthority('PROFESSOR','ADMINISTRATOR')")
 	@Operation(summary = "Create a professor time slot")
 	public ResponseEntity<TimeSlotDto> create(@Valid @RequestBody TimeSlotCreateDto dto) {
 		log.info("Incoming POST /time-slots");
@@ -50,6 +52,7 @@ public class TimeSlotController extends BaseController {
 	}
 
 	@GetMapping
+	@PreAuthorize("isAuthenticated()")
 	@Operation(summary = "Search time slots with query parameters (OpenAPI / gateway contract)")
 	public TimeSlotPageDto searchByQuery(
 			@RequestParam(required = false) Integer page,
@@ -73,6 +76,7 @@ public class TimeSlotController extends BaseController {
 	}
 
 	@PostMapping("/search")
+	@PreAuthorize("isAuthenticated()")
 	@Operation(summary = "Search time slots with pagination and filters in the request body")
 	public TimeSlotPageDto search(@Valid @RequestBody TimeSlotSearchRequest request) {
 		log.info("Incoming POST /time-slots/search");
@@ -80,6 +84,7 @@ public class TimeSlotController extends BaseController {
 	}
 
 	@GetMapping("/{id}")
+	@PreAuthorize("isAuthenticated()")
 	@Operation(summary = "Get time slot by id")
 	public TimeSlotDto getById(@PathVariable UUID id) {
 		log.info("Incoming GET /time-slots/{}", id);
@@ -87,6 +92,7 @@ public class TimeSlotController extends BaseController {
 	}
 
 	@PutMapping("/{id}")
+	@PreAuthorize("hasAnyAuthority('PROFESSOR','ADMINISTRATOR')")
 	@Operation(summary = "Update an available time slot")
 	public TimeSlotDto update(@PathVariable UUID id, @Valid @RequestBody TimeSlotUpdateRequest request) {
 		log.info("Incoming PUT /time-slots/{}", id);
@@ -94,6 +100,7 @@ public class TimeSlotController extends BaseController {
 	}
 
 	@DeleteMapping("/{id}")
+	@PreAuthorize("hasAnyAuthority('PROFESSOR','ADMINISTRATOR')")
 	@Operation(summary = "Logical delete time slot (status = CANCELLED)")
 	public ResponseEntity<Void> delete(@PathVariable UUID id) {
 		log.info("Incoming DELETE /time-slots/{}", id);
@@ -102,6 +109,7 @@ public class TimeSlotController extends BaseController {
 	}
 
 	@PutMapping("/{id}/book")
+	@PreAuthorize("hasAnyAuthority('STUDENT','PROFESSOR','ADMINISTRATOR')")
 	@Operation(summary = "Mark time slot as booked (used by ms-reservas)")
 	public TimeSlotDto book(@PathVariable UUID id) {
 		log.info("Incoming PUT /time-slots/{}/book", id);
@@ -109,6 +117,7 @@ public class TimeSlotController extends BaseController {
 	}
 
 	@PutMapping("/{id}/release")
+	@PreAuthorize("hasAnyAuthority('STUDENT','PROFESSOR','ADMINISTRATOR')")
 	@Operation(summary = "Release a booked time slot back to available")
 	public TimeSlotDto release(@PathVariable UUID id) {
 		log.info("Incoming PUT /time-slots/{}/release", id);

@@ -1,7 +1,6 @@
 package com.reservas.availability.mapper;
 
 import com.reservas.commons.dto.PageMetadataDto;
-import com.reservas.commons.dto.TimeSlotDto;
 import com.reservas.commons.dto.TimeSlotPageDto;
 import com.reservas.commons.entity.Professor;
 import com.reservas.commons.entity.TimeSlot;

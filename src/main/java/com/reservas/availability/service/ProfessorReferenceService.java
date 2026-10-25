@@ -3,6 +3,8 @@ package com.reservas.availability.service;
 import com.reservas.commons.entity.Professor;
 import com.reservas.commons.exception.ResourceNotFoundException;
 import com.reservas.commons.pagination.PageRequestFactory;
+import com.reservas.availability.cache.CacheKeyFactory;
+import com.reservas.availability.cache.IndividualCache;
 import com.reservas.availability.dto.ProfessorReferenceDto;
 import com.reservas.availability.dto.ProfessorReferencePageDto;
 import com.reservas.availability.dto.request.ProfessorReferenceSearchRequest;
@@ -13,6 +15,7 @@ import com.reservas.availability.specification.ProfessorReferenceSpecifications;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -33,8 +36,11 @@ public class ProfessorReferenceService {
 	private final ProfessorReferenceMapper professorReferenceMapper;
 	private final PageMapper pageMapper;
 	private final PageRequestFactory pageRequestFactory;
+	private final IndividualCache individualCache;
+	private final CacheKeyFactory cacheKeys;
 
 	@Transactional(readOnly = true)
+	@Cacheable(cacheNames = "professorReferences", key = "@cacheKeys.of('professor-reference', #id)")
 	public ProfessorReferenceDto getById(UUID id) {
 		log.info("Getting professor reference id={}", id);
 		return professorReferenceMapper.toDto(findOrThrow(id));
@@ -51,7 +57,13 @@ public class ProfessorReferenceService {
 						Sort.by("lastName").ascending().and(Sort.by("firstName").ascending())
 				)
 		);
-		return pageMapper.toProfessorReferencePage(page);
+		ProfessorReferencePageDto result = pageMapper.toProfessorReferencePage(page);
+		individualCache.putEach(
+				"professorReferences",
+				result.getContent(),
+				item -> cacheKeys.of("professor-reference", item.getId())
+		);
+		return result;
 	}
 
 	private Professor findOrThrow(UUID id) {

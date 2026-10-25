@@ -1,0 +1,51 @@
+spring:
+  cache:
+    type: redis
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      timeout: ${REDIS_TIMEOUT:2s}
+      repositories:
+        enabled: false
+
+app:
+  security:
+    jwt:
+      secret: ${JWT_SECRET:local-dev-only-change-this-secret-key}
+      expiration: ${JWT_EXPIRATION:1h}
+      clock-skew: ${JWT_CLOCK_SKEW:30s}
+      issuer: ${JWT_ISSUER:reservas-ms-users}
+      token-type: ${JWT_TOKEN_TYPE:Bearer}
+    public-paths:
+      - /v3/api-docs/**
+      - /swagger-ui/**
+      - /swagger-ui.html
+      - /webjars/**
+      - /actuator/health
+    rules:
+      - path: /time-slots/search
+        methods: [POST]
+        roles: [STUDENT, PROFESSOR, ADMINISTRATOR]
+      - path: /professor-references/search
+        methods: [POST]
+        roles: [STUDENT, PROFESSOR, ADMINISTRATOR]
+      - path: /time-slots/*/book
+        methods: [PUT]
+        roles: [STUDENT, PROFESSOR, ADMINISTRATOR]
+      - path: /time-slots/*/release
+        methods: [PUT]
+        roles: [STUDENT, PROFESSOR, ADMINISTRATOR]
+      - path: /time-slots/**
+        methods: [POST, PUT, DELETE]
+        roles: [PROFESSOR, ADMINISTRATOR]
+  cache:
+    key-prefix: ${CACHE_KEY_PREFIX:ms-availability}
+    default-ttl: ${CACHE_DEFAULT_TTL:15m}
+    domains:
+      timeSlots:
+        ttl: ${CACHE_TTL_TIME_SLOTS:10m}
+        persistent: false
+      professorReferences:
+        ttl: ${CACHE_TTL_PROFESSOR_REFERENCES:30m}
+        persistent: false

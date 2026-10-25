@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,6 +32,7 @@ public class ProfessorReferenceController extends BaseController {
 	private final ProfessorReferenceService professorReferenceService;
 
 	@GetMapping
+	@PreAuthorize("isAuthenticated()")
 	@Operation(summary = "List active professors with pagination")
 	public ProfessorReferencePageDto list(
 			@RequestParam(required = false) Integer page,
@@ -46,6 +48,7 @@ public class ProfessorReferenceController extends BaseController {
 	}
 
 	@PostMapping("/search")
+	@PreAuthorize("isAuthenticated()")
 	@Operation(summary = "Search professors with pagination in the request body")
 	public ProfessorReferencePageDto search(@Valid @RequestBody ProfessorReferenceSearchRequest request) {
 		log.info("Incoming POST /professor-references/search");
@@ -53,6 +56,7 @@ public class ProfessorReferenceController extends BaseController {
 	}
 
 	@GetMapping("/{id}")
+	@PreAuthorize("isAuthenticated()")
 	@Operation(summary = "Get professor reference by id")
 	public ProfessorReferenceDto getById(@PathVariable UUID id) {
 		log.info("Incoming GET /professor-references/{}", id);
