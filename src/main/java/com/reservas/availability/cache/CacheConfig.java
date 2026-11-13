@@ -71,6 +71,8 @@ public class CacheConfig implements CachingConfigurer {
 				.withInitialCacheConfigurations(domains)
 				.transactionAware()
 				.build();
+		// Carga las configuraciones por dominio (TTL de cada caché); sin esto, al envolverlo, todas usarían el TTL por defecto.
+		redis.afterPropertiesSet();
 		return new LoggingCacheManager(redis);
 	}
 
