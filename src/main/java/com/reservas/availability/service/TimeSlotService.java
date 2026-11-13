@@ -13,6 +13,7 @@ import com.reservas.commons.exception.ResourceNotFoundException;
 import com.reservas.commons.pagination.PageRequestFactory;
 import com.reservas.availability.cache.CacheKeyFactory;
 import com.reservas.availability.cache.IndividualCache;
+import com.reservas.availability.dto.request.TimeSlotBatchCreateRequest;
 import com.reservas.availability.dto.request.TimeSlotSearchRequest;
 import com.reservas.availability.dto.request.TimeSlotUpdateRequest;
 import com.reservas.availability.mapper.PageMapper;
@@ -33,6 +34,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -69,6 +74,46 @@ public class TimeSlotService {
 		entity.setProfessor(professor);
 		timeSlotMapper.applyCreate(dto, entity);
 		return timeSlotMapper.toDto(timeSlotRepository.save(entity));
+	}
+
+	/**
+	 * Alta cabecera-detalle: un profesor, una fecha y varias franjas en una sola transacción.
+	 * Cada franja creada se guarda en caché por separado (clave {@code time-slot:<id>}).
+	 */
+	@Transactional
+	public List<TimeSlotDto> createBatch(TimeSlotBatchCreateRequest request) {
+		log.info("Creating time slot batch professorId={} date={} slots={}",
+				request.getProfessorId(), request.getSlotDate(), request.getSlots().size());
+		Professor professor = professorReferenceRepository.getActiveProfessor(request.getProfessorId());
+		Set<LocalTime> starts = new HashSet<>();
+		List<TimeSlot> entities = new ArrayList<>();
+		for (TimeSlotBatchCreateRequest.SlotRange range : request.getSlots()) {
+			TimeSlotCreateDto dto = new TimeSlotCreateDto();
+			dto.setProfessorId(request.getProfessorId());
+			dto.setSlotDate(request.getSlotDate());
+			dto.setStartTime(range.getStartTime());
+			dto.setEndTime(range.getEndTime());
+			validateCreate(dto);
+			LocalTime start = timeSlotMapper.parseTime(dto.getStartTime());
+			LocalTime end = timeSlotMapper.parseTime(dto.getEndTime());
+			validateTimeRange(start, end);
+			if (!starts.add(start)) {
+				throw new BadRequestException("Duplicated start time in the request: " + start);
+			}
+			if (timeSlotRepository.existsByProfessorDateAndStart(professor.getId(), dto.getSlotDate(), start)) {
+				throw new ConflictException("Time slot already exists for this professor, date and start time " + start);
+			}
+			TimeSlot entity = new TimeSlot();
+			entity.setProfessor(professor);
+			timeSlotMapper.applyCreate(dto, entity);
+			entities.add(entity);
+		}
+		List<TimeSlotDto> created = entities.stream()
+				.map(timeSlotRepository::save)
+				.map(timeSlotMapper::toDto)
+				.toList();
+		individualCache.putEach("timeSlots", created, item -> cacheKeys.of("time-slot", item.getId()));
+		return created;
 	}
 
 	@Transactional(readOnly = true)

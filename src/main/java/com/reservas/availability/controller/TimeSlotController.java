@@ -4,6 +4,7 @@ import com.reservas.commons.dto.TimeSlotCreateDto;
 import com.reservas.commons.dto.TimeSlotDto;
 import com.reservas.commons.dto.TimeSlotPageDto;
 import com.reservas.commons.dto.TimeSlotStatusDto;
+import com.reservas.availability.dto.request.TimeSlotBatchCreateRequest;
 import com.reservas.availability.dto.request.TimeSlotSearchRequest;
 import com.reservas.availability.dto.request.TimeSlotUpdateRequest;
 import com.reservas.availability.service.TimeSlotService;
@@ -13,6 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -51,6 +54,14 @@ public class TimeSlotController extends BaseController {
 		return created("/time-slots/" + created.getId(), created);
 	}
 
+	@PostMapping("/batch")
+	@PreAuthorize("hasAnyAuthority('PROFESSOR','ADMINISTRATOR')")
+	@Operation(summary = "Create several time slots for one professor and date in a single request (header-detail)")
+	public ResponseEntity<List<TimeSlotDto>> createBatch(@Valid @RequestBody TimeSlotBatchCreateRequest request) {
+		log.info("Incoming POST /time-slots/batch slots={}", request.getSlots().size());
+		return ResponseEntity.status(HttpStatus.CREATED).body(timeSlotService.createBatch(request));
+	}
+
 	@GetMapping
 	@PreAuthorize("isAuthenticated()")
 	@Operation(summary = "Search time slots with query parameters (OpenAPI / gateway contract)")
@@ -61,7 +72,8 @@ public class TimeSlotController extends BaseController {
 			@RequestParam(required = false) UUID researchLineId,
 			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
 			@RequestParam(required = false) TimeSlotStatusDto status,
-			@RequestParam(required = false) Boolean onlyAvailable
+			@RequestParam(required = false) Boolean onlyAvailable,
+			@RequestParam(required = false) String q
 	) {
 		log.info("Incoming GET /time-slots");
 		TimeSlotSearchRequest request = new TimeSlotSearchRequest();
@@ -72,6 +84,7 @@ public class TimeSlotController extends BaseController {
 		request.setSlotDate(date);
 		request.setStatus(status);
 		request.setOnlyAvailable(onlyAvailable);
+		request.setQ(q);
 		return timeSlotService.search(request);
 	}
 

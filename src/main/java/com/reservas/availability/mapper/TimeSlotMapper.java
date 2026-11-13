@@ -16,10 +16,18 @@ import org.mapstruct.ReportingPolicy;
 public interface TimeSlotMapper {
 
 	@Mapping(target = "professorId", source = "professor.id")
+	@Mapping(target = "professorName", expression = "java(fullName(entity.getProfessor()))")
 	@Mapping(target = "startTime", source = "startTime", qualifiedByName = "localTimeToString")
 	@Mapping(target = "endTime", source = "endTime", qualifiedByName = "localTimeToString")
 	@Mapping(target = "status", source = "status", qualifiedByName = "statusToDto")
 	TimeSlotDto toDto(TimeSlot entity);
+
+	default String fullName(com.reservas.commons.entity.User user) {
+		if (user == null) {
+			return null;
+		}
+		return (user.getFirstName() + " " + user.getLastName()).trim();
+	}
 
 	@Named("localTimeToString")
 	default String localTimeToString(java.time.LocalTime time) {

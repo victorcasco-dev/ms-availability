@@ -26,4 +26,7 @@ public class TimeSlotSearchRequest {
 
 	/** When true, only slots in AVAILABLE status (ignores cancelled/booked). */
 	private Boolean onlyAvailable;
+
+	/** Texto libre: nombre o apellido del profesor. */
+	private String q;
 }

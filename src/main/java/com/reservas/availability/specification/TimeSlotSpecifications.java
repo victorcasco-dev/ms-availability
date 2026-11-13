@@ -35,6 +35,13 @@ public final class TimeSlotSpecifications {
 				Join<Professor, ProfessorResearchLine> lines = professor.join("researchLines", JoinType.INNER);
 				predicates.add(cb.equal(lines.get("researchLine").get("id"), request.getResearchLineId()));
 			}
+			if (request.getQ() != null && !request.getQ().isBlank()) {
+				String like = "%" + request.getQ().trim().toLowerCase() + "%";
+				Join<TimeSlot, Professor> byName = root.join("professor", JoinType.INNER);
+				predicates.add(cb.like(
+						cb.lower(cb.concat(cb.concat(byName.get("firstName"), " "), byName.get("lastName"))),
+						like));
+			}
 			if (request.getSlotDate() != null) {
 				predicates.add(cb.equal(root.get("slotDate"), request.getSlotDate()));
 			}
