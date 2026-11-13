@@ -73,7 +73,8 @@ public class TimeSlotController extends BaseController {
 			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
 			@RequestParam(required = false) TimeSlotStatusDto status,
 			@RequestParam(required = false) Boolean onlyAvailable,
-			@RequestParam(required = false) String q
+			@RequestParam(required = false) String q,
+			@RequestParam(required = false) String period
 	) {
 		log.info("Incoming GET /time-slots");
 		TimeSlotSearchRequest request = new TimeSlotSearchRequest();
@@ -85,6 +86,7 @@ public class TimeSlotController extends BaseController {
 		request.setStatus(status);
 		request.setOnlyAvailable(onlyAvailable);
 		request.setQ(q);
+		request.setPeriod(period);
 		return timeSlotService.search(request);
 	}
 

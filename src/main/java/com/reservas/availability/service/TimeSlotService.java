@@ -132,7 +132,9 @@ public class TimeSlotService {
 				pageRequestFactory.from(
 						request.getPage(),
 						request.getSize(),
-						Sort.by("slotDate").descending().and(Sort.by("startTime").ascending())
+						"UPCOMING".equalsIgnoreCase(request.getPeriod())
+								? Sort.by("slotDate").ascending().and(Sort.by("startTime").ascending())
+								: Sort.by("slotDate").descending().and(Sort.by("startTime").ascending())
 				)
 		);
 		TimeSlotPageDto result = pageMapper.toTimeSlotPage(page);

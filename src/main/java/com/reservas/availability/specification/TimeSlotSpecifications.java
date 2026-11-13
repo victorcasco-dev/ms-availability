@@ -11,6 +11,7 @@ import org.springframework.data.jpa.domain.Specification;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +45,10 @@ public final class TimeSlotSpecifications {
 			}
 			if (request.getSlotDate() != null) {
 				predicates.add(cb.equal(root.get("slotDate"), request.getSlotDate()));
+			} else if ("UPCOMING".equalsIgnoreCase(request.getPeriod())) {
+				predicates.add(cb.greaterThanOrEqualTo(root.get("slotDate"), LocalDate.now()));
+			} else if ("PAST".equalsIgnoreCase(request.getPeriod())) {
+				predicates.add(cb.lessThan(root.get("slotDate"), LocalDate.now()));
 			}
 			if (Boolean.TRUE.equals(request.getOnlyAvailable())) {
 				predicates.add(cb.equal(root.get("status"), TimeSlotStatus.AVAILABLE));

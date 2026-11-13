@@ -29,4 +29,10 @@ public class TimeSlotSearchRequest {
 
 	/** Texto libre: nombre o apellido del profesor. */
 	private String q;
+
+	/**
+	 * {@code UPCOMING}: desde hoy, en orden cronológico. {@code PAST}: antes de hoy, del más reciente al
+	 * más antiguo. Nulo: todas las fechas (más recientes primero).
+	 */
+	private String period;
 }
