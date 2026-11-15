@@ -14,6 +14,7 @@
 	<groupId>com.reservas</groupId>
 	<artifactId>ms-availability</artifactId>
 	<version>1.0.0</version>
+	<packaging>war</packaging>
 	<name>ms-availability</name>
 	<description>Availability microservice: professor time slots for thesis tutoring</description>
 
@@ -27,6 +28,12 @@
 	</properties>
 
 	<dependencies>
+		<!-- Tomcat lo provee el servidor cuando se despliega el WAR; java -jar sigue funcionando -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>com.reservas</groupId>
 			<artifactId>commons</artifactId>
